@@ -17,23 +17,11 @@ from linebot.v3.webhooks import (
     MessageEvent,
     TextMessageContent
 )
-import os,sys
-
+from   handle_keys import get_channel_data
 app = Flask(__name__)
-
-
-channel_secret = os.getenv('YUUKI_LINEBOT_SECRET_KEY', None)
-channel_access_token = os.getenv('YUUKI_LINEBOT_ACCESS_TOKEN', None)
-if channel_secret is None:
-    print('Specify YUUKI_LINEBOT_SECRET_KEY as environment variable.')
-    sys.exit(1)
-if channel_access_token is None:
-    print('Specify YUUKI_LINEBOT_ACCESS_TOKEN as environment variable.')
-    sys.exit(1)
-
-
-configuration = Configuration(access_token=channel_access_token)
-handler = WebhookHandler(channel_secret)
+keys = get_channel_data()
+configuration = Configuration(access_token=keys['YUUKI_LINEBOT_ACCESS_TOKEN'])
+handler = WebhookHandler(keys['YUUKI_LINEBOT_SECRET_KEY'])
 
 @app.route("/")
 def say_hello_world(username=""):
