@@ -1,5 +1,6 @@
 from flask import Flask, request, abort , render_template
 
+import os
 from linebot.v3 import (
     WebhookHandler
 )
@@ -18,6 +19,8 @@ from linebot.v3.webhooks import (
     TextMessageContent
 )
 from   handle_keys import get_channel_data
+from openai_api import chat_with_chatgpt
+
 app = Flask(__name__)
 keys = get_channel_data()
 configuration = Configuration(access_token=keys['YUUKI_LINEBOT_ACCESS_TOKEN'])
@@ -50,12 +53,22 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
+
+    user_message = event.message.text
+    api_key =keys['OPENAI_API_KEY']
+
+    response = chat_with_chatgpt(user_message, api_key)
+     
+
+
+
+
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
         line_bot_api.reply_message_with_http_info(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
-                messages=[TextMessage(text=event.message.text)]
+                messages=[TextMessage(text=response)]
             )
         )
 
